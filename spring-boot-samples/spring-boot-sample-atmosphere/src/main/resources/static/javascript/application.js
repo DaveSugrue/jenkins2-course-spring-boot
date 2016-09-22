@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
 	"use strict";
 
 	var header = $('#header');
@@ -14,17 +14,17 @@ $(function() {
 
 	// We are now ready to cut the request
 	var request = {
-		url : '/chat',
-		contentType : "application/json",
-		logLevel : 'debug',
-		transport : transport,
-		trackMessageLength : true,
-		reconnectInterval : 5000
+		url: '/chat',
+		contentType: "application/json",
+		logLevel: 'debug',
+		transport: transport,
+		trackMessageLength: true,
+		reconnectInterval: 5000
 	};
 
-	request.onOpen = function(response) {
+	request.onOpen = function (response) {
 		content.html($('<p>', {
-			text : 'Atmosphere connected using ' + response.transport
+			text: 'Atmosphere connected using ' + response.transport
 		}));
 		input.removeAttr('disabled').focus();
 		status.text('Choose name:');
@@ -35,55 +35,50 @@ $(function() {
 		request.uuid = response.request.uuid;
 	};
 
-	request.onClientTimeout = function(r) {
+	request.onClientTimeout = function (r) {
 		content
-				.html($(
-						'<p>',
-						{
-							text : 'Client closed the connection after a timeout. Reconnecting in '
-									+ request.reconnectInterval
-						}));
+			.html($(
+				'<p>', {
+					text: 'Client closed the connection after a timeout. Reconnecting in ' + request.reconnectInterval
+				}));
 		subSocket
-				.push(atmosphere.util
-						.stringifyJSON({
-							author : author,
-							message : 'is inactive and closed the connection. Will reconnect in '
-									+ request.reconnectInterval
-						}));
+			.push(atmosphere.util
+				.stringifyJSON({
+					author: author,
+					message: 'is inactive and closed the connection. Will reconnect in ' + request.reconnectInterval
+				}));
 		input.attr('disabled', 'disabled');
-		setTimeout(function() {
+		setTimeout(function () {
 			subSocket = socket.subscribe(request);
 		}, request.reconnectInterval);
 	};
 
-	request.onReopen = function(response) {
+	request.onReopen = function (response) {
 		input.removeAttr('disabled').focus();
 		content.html($('<p>', {
-			text : 'Atmosphere re-connected using ' + response.transport
+			text: 'Atmosphere re-connected using ' + response.transport
 		}));
 	};
 
 	// For demonstration of how you can customize the fallbackTransport using
 	// the onTransportFailure function
-	request.onTransportFailure = function(errorMsg, request) {
+	request.onTransportFailure = function (errorMsg, request) {
 		atmosphere.util.info(errorMsg);
 		request.fallbackTransport = "long-polling";
 		header
-				.html($(
-						'<h3>',
-						{
-							text : 'Atmosphere Chat. Default transport is WebSocket, fallback is '
-									+ request.fallbackTransport
-						}));
+			.html($(
+				'<h3>', {
+					text: 'Atmosphere Chat. Default transport is WebSocket, fallback is ' + request.fallbackTransport
+				}));
 	};
 
-	request.onMessage = function(response) {
+	request.onMessage = function (response) {
 
 		var message = response.responseBody;
 		try {
 			var json = atmosphere.util.parseJSON(message);
 		} catch (e) {
-			console.log('This doesn\'t look like a valid JSON: ', message);
+			console.log('This doesn\'t look like a valid JSON you dumbass: ', message);
 			return;
 		}
 
@@ -93,45 +88,42 @@ $(function() {
 			status.text(myName + ': ').css('color', 'blue');
 		} else {
 			var me = json.author == author;
-			var date = typeof (json.time) == 'string' ? parseInt(json.time)
-					: json.time;
+			var date = typeof (json.time) == 'string' ? parseInt(json.time) : json.time;
 			addMessage(json.author, json.message, me ? 'blue' : 'black',
-					new Date(date));
+				new Date(date));
 		}
 	};
 
-	request.onClose = function(response) {
+	request.onClose = function (response) {
 		content.html($('<p>', {
-			text : 'Server closed the connection after a timeout'
+			text: 'Server closed the connection after a timeout'
 		}));
 		if (subSocket) {
 			subSocket.push(atmosphere.util.stringifyJSON({
-				author : author,
-				message : 'disconnecting'
+				author: author,
+				message: 'disconnecting'
 			}));
 		}
 		input.attr('disabled', 'disabled');
 	};
 
-	request.onError = function(response) {
+	request.onError = function (response) {
 		content.html($('<p>', {
-			text : 'Sorry, but there\'s some problem with your '
-					+ 'socket or the server is down'
+			text: 'Sorry, but there\'s some problem with your ' + 'socket or the server is down'
 		}));
 		logged = false;
 	};
 
-	request.onReconnect = function(request, response) {
+	request.onReconnect = function (request, response) {
 		content.html($('<p>', {
-			text : 'Connection lost, trying to reconnect. Trying to reconnect '
-					+ request.reconnectInterval
+			text: 'Connection lost, trying to reconnect. Trying to reconnect ' + request.reconnectInterval
 		}));
 		input.attr('disabled', 'disabled');
 	};
 
 	subSocket = socket.subscribe(request);
 
-	input.keydown(function(e) {
+	input.keydown(function (e) {
 		if (e.keyCode === 13) {
 			var msg = $(this).val();
 
@@ -141,8 +133,8 @@ $(function() {
 			}
 
 			subSocket.push(atmosphere.util.stringifyJSON({
-				author : author,
-				message : msg
+				author: author,
+				message: msg
 			}));
 			$(this).val('');
 
@@ -154,15 +146,6 @@ $(function() {
 	});
 
 	function addMessage(author, message, color, datetime) {
-		content.append('<p><span style="color:'
-				+ color
-				+ '">'
-				+ author
-				+ '</span> @ '
-				+ +(datetime.getHours() < 10 ? '0' + datetime.getHours()
-						: datetime.getHours())
-				+ ':'
-				+ (datetime.getMinutes() < 10 ? '0' + datetime.getMinutes()
-						: datetime.getMinutes()) + ': ' + message + '</p>');
+		content.append('<p><span style="color:' + color + '">' + author + '</span> @ ' + +(datetime.getHours() < 10 ? '0' + datetime.getHours() : datetime.getHours()) + ':' + (datetime.getMinutes() < 10 ? '0' + datetime.getMinutes() : datetime.getMinutes()) + ': ' + message + '</p>');
 	}
 });
