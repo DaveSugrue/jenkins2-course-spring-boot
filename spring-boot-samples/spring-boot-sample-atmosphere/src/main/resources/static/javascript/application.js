@@ -13,8 +13,8 @@ $(function () {
 	var transport = 'websocket';
 
 	//just messing
-	var test = "test3";
-	alert (test3);
+	var test = "test4";
+	alert (test4);
 
 	// We are now ready to cut the request
 	var request = {
