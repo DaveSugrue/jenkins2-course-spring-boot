@@ -12,6 +12,10 @@ $(function () {
 	var subSocket;
 	var transport = 'websocket';
 
+	//just messing
+	var test = "test";
+	alert (test);
+
 	// We are now ready to cut the request
 	var request = {
 		url: '/chat',
